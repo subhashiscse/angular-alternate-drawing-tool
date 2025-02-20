@@ -20,9 +20,11 @@ type HandleType = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'c
 export class ToolbarComponent implements OnInit, AfterViewInit {
   
   @ViewChild('canvas', { static: true }) canvas!: ElementRef<HTMLCanvasElement>;
-  private ctx!: CanvasRenderingContext2D | null;
+  private ctx!: CanvasRenderingContext2D | any;
   private scaleFactor: number = 1.05; // Zoom factor
   private zoomLevel: number = 1; // Initial zoom level
+  svgImage = new Image();
+  svgUrl = 'assets/room.svg';
 
   // All drawn shapes
   shapes: Shape[] =[];
@@ -57,6 +59,8 @@ export class ToolbarComponent implements OnInit, AfterViewInit {
   polygonPoints: { x: number, y: number }[] = [];
   polyLinePoints: { x: number, y: number }[] = [];
 
+  private svgImageDrawn = false;
+
   ngOnInit(): void {
     this.ctx = this.canvas.nativeElement.getContext('2d');
     let data = localStorage.getItem("ShapesData");
@@ -66,8 +70,20 @@ export class ToolbarComponent implements OnInit, AfterViewInit {
     }
   }
   ngAfterViewInit() {
-    this.ctx = this.canvas.nativeElement.getContext('2d');
-    this.redraw();
+    // this.ctx = this.canvas.nativeElement.getContext('2d');
+    // this.redraw();
+    const canvas = this.canvas.nativeElement;
+
+    if (this.ctx && !this.svgImageDrawn) {
+      
+      this.svgImage.src = this.svgUrl;
+
+      this.svgImage.onload = () => {
+        this.ctx.drawImage(this.svgImage, 0, 0);
+        this.svgImageDrawn = true;
+      };
+      this.redraw();
+    }
   }
 
   setShape(shape: 'rectangle' | 'circle' | 'polygon' | 'polyline') {
@@ -425,6 +441,10 @@ export class ToolbarComponent implements OnInit, AfterViewInit {
     if (!this.ctx) return;
     // Clear the canvas.
     this.ctx.clearRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
+    
+    if (this.svgImageDrawn) {
+      this.ctx.drawImage(this.svgImage, 0, 0);
+    }
     // Draw each shape.
     for (const shape of this.shapes) {
       this.drawShape(shape);
