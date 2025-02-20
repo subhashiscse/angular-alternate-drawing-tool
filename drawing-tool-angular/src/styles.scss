@@ -1,0 +1,25 @@
+body {
+    margin: 0;
+    overflow: hidden;
+  }
+  
+  .toolbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 10px;
+    z-index: 1000;
+  }
+  
+  .toolbar button {
+    background: #555;
+    color: white;
+    border: none;
+    padding: 10px;
+    margin: 5px;
+    cursor: pointer;
+  }
+  
+  .toolbar button:hover {
+    background: #777;
+  }

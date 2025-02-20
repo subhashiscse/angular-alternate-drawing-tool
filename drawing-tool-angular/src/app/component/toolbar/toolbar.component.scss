@@ -1,0 +1,115 @@
+:host {
+    /* Define common CSS variables for colors and spacing */
+    --color-bg: #fff;
+    --color-border: #ddd;
+    --color-hover: #f7f7f7;
+    --toolbar-padding: 8px;
+    --icon-size: 24px;
+    --icon-btn-size: 40px;
+  
+    display: block;
+    font-family: sans-serif;
+  }
+  
+  /* Toolbar container styling similar to Excalidraw's top toolbar */
+  .App-toolbar {
+    background: var(--color-bg);
+    border-bottom: 1px solid var(--color-border);
+    padding: var(--toolbar-padding);
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Flex container for toolbar items */
+  .Stack {
+    display: flex;
+    align-items: center;
+  }
+  
+  .Stack_horizontal {
+    flex-direction: row;
+    gap: 8px;
+  }
+  
+  /* Individual tool button styling */
+  .ToolIcon {
+    position: relative;
+    width: var(--icon-btn-size);
+    height: var(--icon-btn-size);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.15s ease-in-out;
+  }
+  
+  .ToolIcon:hover {
+    background: var(--color-hover);
+  }
+  
+  /* Style for inner icon container */
+  .ToolIcon__icon {
+    width: var(--icon-size);
+    height: var(--icon-size);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Keybinding badge (if needed) */
+  .ToolIcon__keybinding {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    font-size: 10px;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 2px;
+    padding: 1px 3px;
+  }
+  
+  /* Divider between groups of tools */
+  .App-toolbar__divider {
+    width: 1px;
+    height: 24px;
+    background: var(--color-border);
+    margin: 0 8px;
+  }
+  
+  /* Dropdown menu button styling */
+  .dropdown-menu-button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 4px;
+    position: relative;
+    border-radius: 4px;
+    transition: background 0.15s ease-in-out;
+  }
+  
+  .dropdown-menu-button:hover {
+    background: var(--color-hover);
+  }
+  
+  /* Utility class to visually hide elements while remaining accessible */
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+  }
+  canvas {
+    border: 1px solid black;
+    cursor: crosshair;
+  }
+  
+  .toolbar {
+    margin-bottom: 10px;
+  }
+  
