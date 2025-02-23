@@ -9,6 +9,7 @@ interface Shape {
   points?: { x: number, y: number }[]; 
   strokeColor?: string;
   fillColor?: string;
+  opacity: number
 }
 type HandleType = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'circle-handle';
 
@@ -24,7 +25,8 @@ export class ToolbarComponent implements OnInit, AfterViewInit {
   private scaleFactor: number = 1.05; // Zoom factor
   private zoomLevel: number = 1; // Initial zoom level
   svgImage = new Image();
-  svgUrl = 'assets/room.svg';
+  //svgUrl = 'assets/room.svg';
+  svgUrl = 'https://smartcityfalcon.blob.core.windows.net/dev/9409382C-5E69-4508-A2B1-E350EA8D9C46/253e0fd0-a581-4cf8-bee7-fe6bcb1e1794/7b8f5507-e577-48d6-a676-8ed7a7ab5ffe/253e0fd0-a581-4cf8-bee7-fe6bcb1e1794.png?sv=2018-03-28&sr=b&sig=KG2PccyXaWdwM0gk2Ayq%2BKh9q8lLpeW74lxlb6QXKdg%3D&se=2025-02-26T08%3A57%3A17Z&sp=r';
 
   // All drawn shapes
   shapes: Shape[] =[];
@@ -325,7 +327,8 @@ export class ToolbarComponent implements OnInit, AfterViewInit {
           width,
           height,
           strokeColor: this.selectedStrokeColor,
-          fillColor: this.selectedFillColor
+          fillColor: this.selectedFillColor,
+          opacity: 0.5
         };
       } else if (this.selectedShape === 'circle') {
         const radius = Math.sqrt(width * width + height * height);
@@ -335,7 +338,8 @@ export class ToolbarComponent implements OnInit, AfterViewInit {
           y: this.startY,
           radius,
           strokeColor: this.selectedStrokeColor,
-          fillColor: this.selectedFillColor
+          fillColor: this.selectedFillColor,
+          opacity: 0.5
         };
       }
       this.redraw();
@@ -349,7 +353,8 @@ export class ToolbarComponent implements OnInit, AfterViewInit {
         type: 'polygon',
         points: [...this.polygonPoints, { x: mouseX, y: mouseY }],
         strokeColor: this.selectedStrokeColor,
-        fillColor: this.selectedFillColor
+        fillColor: this.selectedFillColor,
+        opacity: 0.5
       };
       this.previewShape = previewPolygon;
       this.redraw();
@@ -360,7 +365,8 @@ export class ToolbarComponent implements OnInit, AfterViewInit {
         type: 'polyline',
         points: [...this.polygonPoints, { x: mouseX, y: mouseY }],
         strokeColor: this.selectedStrokeColor,
-        fillColor: this.selectedFillColor
+        fillColor: this.selectedFillColor,
+        opacity: 0.5
       };
       this.previewShape = previewPolygon;
       this.redraw();
@@ -403,7 +409,8 @@ export class ToolbarComponent implements OnInit, AfterViewInit {
         type: 'polygon',
         points: [...this.polygonPoints],
         strokeColor: this.selectedStrokeColor,
-        fillColor: this.selectedFillColor
+        fillColor: this.selectedFillColor,
+        opacity: 0.5
       };
       this.shapes.push(polygonShape);
       localStorage.setItem("ShapesData", JSON.stringify(this.shapes));
@@ -416,7 +423,8 @@ export class ToolbarComponent implements OnInit, AfterViewInit {
       this.shapes.push({
         type: 'polyline',
         points: [...this.polygonPoints],
-        strokeColor: this.selectedStrokeColor
+        strokeColor: this.selectedStrokeColor,
+        opacity: 0.5
       });
       localStorage.setItem("ShapesData", JSON.stringify(this.shapes));
       this.isPolygonDrawing = false;
@@ -459,10 +467,17 @@ export class ToolbarComponent implements OnInit, AfterViewInit {
   private drawShape(shape: Shape) {
     if (!this.ctx) return;
     this.ctx.beginPath();
-    debugger;
+    let opacity = shape.opacity !== undefined ? shape.opacity : 1.0;
     if (shape.type === 'rectangle' && shape.width !== undefined && shape.height !== undefined) {
-      this.ctx.fillStyle = shape.fillColor || '#FFFFFF';
+      let opacity = shape.opacity !== undefined ? shape.opacity : 1.0;
+      let fillColor = shape.fillColor || 'rgba(255, 255, 255, 1)'; 
+
+      if (!fillColor.startsWith('rgba')) {
+          fillColor = this.convertToRGBA(fillColor, opacity);
+      }
+      this.ctx.fillStyle = fillColor;
       this.ctx.strokeStyle = shape.strokeColor || '#000000';
+      
       this.ctx.fillRect(shape.x!, shape.y!, shape.width, shape.height);
       this.ctx.strokeRect(shape.x!, shape.y!, shape.width, shape.height);
       // Draw resize handles.
@@ -497,6 +512,17 @@ export class ToolbarComponent implements OnInit, AfterViewInit {
     } else {
       debugger;
     }
+  }
+  convertToRGBA(color: string, opacity: number): string {
+      const tempCanvas = document.createElement('canvas');
+      const tempCtx = tempCanvas.getContext('2d');
+      if (!tempCtx) return `rgba(255, 255, 255, ${opacity})`;
+  
+      tempCtx.fillStyle = color;
+      tempCtx.fillRect(0, 0, 1, 1);
+  
+      const imageData = tempCtx.getImageData(0, 0, 1, 1).data;
+      return `rgba(${imageData[0]}, ${imageData[1]}, ${imageData[2]}, ${opacity})`;
   }
 
   /** Helper method to draw a small square handle at a given position */
